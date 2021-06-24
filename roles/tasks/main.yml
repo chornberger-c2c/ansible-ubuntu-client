@@ -68,3 +68,6 @@
     dest: "{{ user }}/.p10k.zsh"
     owner: "{{ user }}"
 
+- name: install barrier
+  snap:
+    name: barrier
