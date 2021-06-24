@@ -1,0 +1,70 @@
+---
+- name: set hostname
+  hostname:
+    name: "{{ hostname }}"
+
+- name: create user 
+  user:
+    name: "{{ user }}"
+    shell: /usr/bin/zsh
+    groups: sudo
+    append: yes
+
+- name: allow passwordless sudo
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^%sudo'
+    line: '%sudo ALL=(ALL) NOPASSWD: ALL'
+
+- name: set ssh key for user
+  authorized_key:
+    user: "{{ user }}"
+    state: present
+    key: https://github.com/horni23.keys
+
+- name: set ssh key for root
+  authorized_key:
+    user: root
+    state: present
+    key: https://github.com/horni23.keys
+
+- name: install packages
+  apt:
+    name:
+      - xz-utils
+      - git
+      - vlc
+      - golang
+      - ansible
+      - python3-pip
+      - zsh
+
+- name: install VS Code
+  apt:
+    deb: https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-arm64
+    state: present
+
+- name: install ohmyzsh
+  git:
+    repo: https://github.com/ohmyzsh/ohmyzsh.git 
+    dest: "{{ user }}/.oh-my-zsh"
+
+- name: install powerlevel10k
+  git:
+    repo: https://github.com/romkatv/powerlevel10k.git
+    dest: "{{ user }}/powerlevel10k"
+    depth: 1
+
+- name: copy .zshrc
+  copy:
+    src: zshrc
+    dest: "{{ user }}/.zshrc"
+    owner: "{{ user }}"
+
+- name: copy .p10k.zsh
+  copy:
+    src: p10k.zsh
+    dest: "{{ user }}/.p10k.zsh"
+    owner: "{{ user }}"
+
