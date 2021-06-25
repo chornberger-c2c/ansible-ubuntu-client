@@ -1,4 +1,6 @@
 ---
-- hosts: all
+- name: add role
+  hosts: all
   become: true
-  roles: client
+  roles: 
+  - client
